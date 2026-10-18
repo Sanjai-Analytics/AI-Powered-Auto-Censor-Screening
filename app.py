@@ -171,14 +171,14 @@ if "active_stream_movie" not in st.session_state:
 # ==========================================
 # LEFT SIDEBAR NAVIGATION & S3 CONTROLS
 # ==========================================
-st.sidebar.title("🎬 AI Censor Platform")
+st.sidebar.title("AI Censor Platform")
 slide_choice = st.sidebar.radio(
     "Select Slide:",
     ["1. Main Slide (Censor Studio Dashboard)", "2. Second Slide (Kids-Safe Netflix Player)"]
 )
 st.sidebar.markdown("---")
 
-if st.sidebar.button("🔄 Refresh Movies from AWS S3"):
+if st.sidebar.button("Refresh Movies from AWS S3"):
     st.session_state.s3_catalog = fetch_all_s3_movies()
     st.session_state.recently_watched = list(st.session_state.s3_catalog)
     st.rerun()
@@ -186,13 +186,13 @@ if st.sidebar.button("🔄 Refresh Movies from AWS S3"):
 # Left-hand slide down bars required for Main Slide
 movie_titles = [m["title"] for m in st.session_state.s3_catalog]
 selected_title = st.sidebar.selectbox(
-    "📂 Pick a Movie from AWS S3:",
+    "Pick a Movie from AWS S3:",
     movie_titles if movie_titles else ["No movies in S3 yet"]
 )
 
 # Target Certificate dropdown (U and UA, with U as default)
 target_cert = st.sidebar.selectbox(
-    "🎯 Target Certificate:",
+    "Target Certificate:",
     options=["U", "UA"],
     index=0  # Default is "U"
 )
@@ -201,13 +201,13 @@ target_cert = st.sidebar.selectbox(
 # SLIDE 1: MAIN SLIDE (CENSOR STUDIO DASHBOARD)
 # ==========================================
 if slide_choice == "1. Main Slide (Censor Studio Dashboard)":
-    st.title("🛡️ Main Slide: Censor Studio Dashboard")
+    st.title("Main Slide: Censor Studio Dashboard")
 
     # --- 1. UPLOAD NEW MOVIE SECTION ---
-    with st.expander("📤 Upload & Screen a New Movie (Auto-Saves to AWS S3)", expanded=not bool(st.session_state.s3_catalog)):
+    with st.expander("Upload & Screen a New Movie (Auto-Saves to AWS S3)", expanded=not bool(st.session_state.s3_catalog)):
         uploaded_file = st.file_uploader("Upload Movie (.mp4)", type=["mp4"])
         if uploaded_file is not None:
-            if st.button("🚀 Run AI Screening & Upload to S3", type="primary"):
+            if st.button("Run AI Screening & Upload to S3", type="primary"):
                 file_name = uploaded_file.name
                 with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as tmp:
                     tmp.write(uploaded_file.read())
@@ -246,13 +246,13 @@ if slide_choice == "1. Main Slide (Censor Studio Dashboard)":
     current_movie = next((m for m in st.session_state.s3_catalog if m["title"] == selected_title), None)
 
     if current_movie:
-        st.subheader(f"🎥 Movie Screening: {current_movie['title']}")
+        st.subheader(f"Movie Screening: {current_movie['title']}")
         # Main Slide plays with Kids Mode OFF so censor officers see all bounding boxes on weapons/blood
         render_html5_player(current_movie["stream_url"], current_movie, kids_safe_enabled=False)
 
         # --- 2. VISUAL TIMELINE (BOXES FOR DETECTED EVENTS) ---
         st.markdown("---")
-        st.subheader("📊 Time Line (Detected Weapons, Blood/Gore, Violence, Smoking & Abusive Words)")
+        st.subheader("Time Line (Detected Weapons, Blood/Gore, Violence, Smoking & Abusive Words)")
         events = current_movie.get("timeline_events", [])
         if events:
             df_tl = pd.DataFrame(events)
@@ -275,7 +275,7 @@ if slide_choice == "1. Main Slide (Censor Studio Dashboard)":
         st.markdown("---")
         rep_col1, rep_col2 = st.columns([4, 1])
         with rep_col1:
-            st.subheader("📋 Report (Based on Time Line)")
+            st.subheader("Report (Based on Time Line)")
             with st.container(border=True):
                 for line in current_movie.get("report_lines", []):
                     st.markdown(f"- {line}")
@@ -299,7 +299,7 @@ if slide_choice == "1. Main Slide (Censor Studio Dashboard)":
         total_pts = current_movie["total_severity_score"]
 
         with cert_col1:
-            st.subheader("📜 LLM Certificate (Based on the Report)")
+            st.subheader("LLM Certificate (Based on the Report)")
             with st.container(border=True):
                 # Display Metadata
                 st.markdown(f"### Movie Title: **{current_movie['title']}**")
@@ -312,13 +312,13 @@ if slide_choice == "1. Main Slide (Censor Studio Dashboard)":
                 )
 
                 # Display Criteria & One-Time Category Weights
-                with st.expander("📌 View Official One-Time Scoring Weights & Certificate Criteria", expanded=True):
+                with st.expander("View Official One-Time Scoring Weights & Certificate Criteria", expanded=True):
                     w_col, c_col = st.columns(2)
                     with w_col:
                         st.markdown("**One-Time Category Weights (Max 1 allotment per movie):**")
                         for cat_name, w_val in CATEGORY_WEIGHTS.items():
                             allotted = current_movie["category_breakdown"].get(cat_name, 0)
-                            status = f"✅ Allotted: {allotted} pt" if allotted > 0 else "0 pt"
+                            status = f"Allotted: {allotted} pt" if allotted > 0 else "0 pt"
                             st.markdown(f"- **{cat_name}:** Weight `{w_val}` → *{status}*")
                     with c_col:
                         st.markdown("**Certificate Criteria:**")
@@ -334,15 +334,15 @@ if slide_choice == "1. Main Slide (Censor Studio Dashboard)":
                 # Target Certificate vs LLM Certificate Comparison Logic
                 if target_cert == issued_cert:
                     st.success(
-                        f"✅ **Target Matched ({target_cert} == {issued_cert}):** "
+                        f"**Target Matched ({target_cert} == {issued_cert}):** "
                         f"Your target certificate matches the LLM Issued Certificate. No scene cuts or suggestions are needed."
                     )
                 else:
                     st.warning(
-                        f"⚠️ **Target Mismatch (Target: `{target_cert}` vs LLM Issued: `{issued_cert}`):** "
+                        f"**Target Mismatch (Target: `{target_cert}` vs LLM Issued: `{issued_cert}`):** "
                         f"See the LLM's timestamped suggestions for the Movie Director / Production Team below:"
                     )
-                    st.markdown("#### 🎬 LLM Suggestions for Director / Production Team (When & Where):")
+                    st.markdown("#### LLM Suggestions for Director / Production Team (When & Where):")
                     if issued_cert == "A":
                         st.markdown(f"- **Option A (For UA Certificate):** {current_movie['suggestion_for_ua']}")
                         if target_cert == "U":
@@ -391,17 +391,17 @@ elif slide_choice == "2. Second Slide (Kids-Safe Netflix Player)":
     # Clean Layout: Only Video Player, Kids-Safe Toggle, Metadata, and 4 Netflix Rows
     head_col1, head_col2 = st.columns([3, 1])
     with head_col1:
-        st.title("🍿 StreamSafe Cinema")
+        st.title("StreamSafe Cinema")
     with head_col2:
         st.write("")
-        kids_safe_toggle = st.toggle("🛡️ Button for Kids Safety", value=True)
+        kids_safe_toggle = st.toggle("Button for Kids Safety", value=True)
 
     active_movie = st.session_state.active_stream_movie
     if active_movie:
         if kids_safe_toggle:
-            st.success("🛡️ **Kids Safety ON**: Violence, weapons, blood, and smoking scenes cut down instantly. Abusive words/subtitles are muted.")
+            st.success("**Kids Safety ON**: Violence, weapons, blood, and smoking scenes cut down instantly. Abusive words/subtitles are muted.")
         else:
-            st.warning("⚠️ **Kids Safety OFF**: Playing unedited movie with weapon/blood bounding boxes and English subtitles.")
+            st.warning("**Kids Safety OFF**: Playing unedited movie with weapon/blood bounding boxes and English subtitles.")
 
         render_html5_player(active_movie["stream_url"], active_movie, kids_safe_enabled=kids_safe_toggle)
 
@@ -427,10 +427,10 @@ elif slide_choice == "2. Second Slide (Kids-Safe Netflix Player)":
         for idx, mov in enumerate(movies_list):
             with cols[idx % 4]:
                 with st.container(border=True):
-                    st.markdown(f"**🎬 {mov['title']}**")
+                    st.markdown(f"** {mov['title']}**")
                     st.caption(f"Certificate: **{mov['censor_rating']}** | {mov['duration_str']} | {mov['pixel_quality']}")
                     st.caption(mov["description"][:90] + "...")
-                    if st.button("▶ Watch Movie", key=f"play_{row_key}_{mov['file']}_{idx}", use_container_width=True):
+                    if st.button("Watch Movie", key=f"play_{row_key}_{mov['file']}_{idx}", use_container_width=True):
                         st.session_state.active_stream_movie = mov
                         # Ensure watched movie is placed at the front of Recently Watched as well as its category
                         st.session_state.recently_watched = [
@@ -444,10 +444,10 @@ elif slide_choice == "2. Second Slide (Kids-Safe Netflix Player)":
     a_movies = [m for m in st.session_state.s3_catalog if m["censor_rating"] == "A"]
 
     # 1. Recently Watched (Fetches all S3 movies and updates when user plays any movie)
-    render_netflix_row("🕒 Recently Watched", st.session_state.recently_watched, "recent")
+    render_netflix_row("Recently Watched", st.session_state.recently_watched, "recent")
     # 2. Kids and Family for U
-    render_netflix_row("👨‍👩‍👧 Kids and Family (U)", u_movies, "cat_u")
+    render_netflix_row("Kids and Family (U)", u_movies, "cat_u")
     # 3. Action & Thriller for UA
-    render_netflix_row("⚡ Action & Thriller (UA)", ua_movies, "cat_ua")
+    render_netflix_row("Action & Thriller (UA)", ua_movies, "cat_ua")
     # 4. Mature & Restricted for A
-    render_netflix_row("🔞 Mature & Restricted (A)", a_movies, "cat_a")
+    render_netflix_row("Mature & Restricted (A)", a_movies, "cat_a")
