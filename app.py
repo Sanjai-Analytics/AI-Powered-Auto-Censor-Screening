@@ -200,8 +200,8 @@ target_cert = st.sidebar.selectbox(
 # ==========================================
 # SLIDE 1: MAIN SLIDE (CENSOR STUDIO DASHBOARD)
 # ==========================================
-if slide_choice == "1. Main Slide (Censor Studio Dashboard)":
-    st.title("Main Slide: Censor Studio Dashboard")
+if slide_choice == "1.Censor Studio Dashboard":
+    st.title("AI Censor Studio Dashboard")
 
     # --- 1. UPLOAD NEW MOVIE SECTION ---
     with st.expander("Upload & Screen a New Movie (Auto-Saves to AWS S3)", expanded=not bool(st.session_state.s3_catalog)):
@@ -271,11 +271,11 @@ if slide_choice == "1. Main Slide (Censor Studio Dashboard)":
         else:
             st.success("Clean Timeline: No weapons, blood, smoking, violence, or abusive words detected.")
 
-        # --- 3. TIMELINE-BASED REPORT BOX ---
+        # --- 3. TIMELINE ---
         st.markdown("---")
         rep_col1, rep_col2 = st.columns([4, 1])
         with rep_col1:
-            st.subheader("Report (Based on Time Line)")
+            st.subheader("Report")
             with st.container(border=True):
                 for line in current_movie.get("report_lines", []):
                     st.markdown(f"- {line}")
@@ -299,7 +299,7 @@ if slide_choice == "1. Main Slide (Censor Studio Dashboard)":
         total_pts = current_movie["total_severity_score"]
 
         with cert_col1:
-            st.subheader("LLM Certificate (Based on the Report)")
+            st.subheader("LLM Certificate")
             with st.container(border=True):
                 # Display Metadata
                 st.markdown(f"### Movie Title: **{current_movie['title']}**")
